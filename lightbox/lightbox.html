@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Lightbox</title>
+	<style>
+		.imgs { display: flex; justify-content: center; flex-wrap: wrap; }
+		.imgs > img { 
+			width: 300px;
+			height: 300px;
+			cursor: pointer;
+			margin-right: 2%;
+			
+		}
+		.imgs > img:hover { opacity: 0.7; }
+		.imgs > img:active { 
+			-webkit-box-shadow: 10px 10px 39px 0px rgba(0,0,0,0.75);
+			-moz-box-shadow: 10px 10px 39px 0px rgba(0,0,0,0.75);
+			box-shadow: 10px 10px 39px 0px rgba(0,0,0,0.75);
+		}
+
+		img { max-width: 100%; }
+
+		.lightbox > #closeTab {
+			font-size: 4em;
+			cursor: pointer;
+			color: gray;
+			font-weight: bold;
+			position: relative;
+			bottom: 66px;
+			width: 12px;
+		}
+
+		.lightbox > #closeTab:active {
+			text-shadow: 2px 2px 6px #FFFFFF;
+		}
+
+		
+
+		.lightbox > #boxImage {
+			display: block;
+			
+		}
+
+		body { margin: 0;}
+
+		.hidden { display: none; }
+
+		.otherImages { display: flex; justify-content: center; flex-wrap: wrap;}
+		
+		.otherImages > img {
+			max-width: 150px;
+			max-height: 150px;
+			margin-top: 10px;
+			cursor: pointer;
+			margin-right: 2%;
+			
+		}
+
+		.otherImages > img:hover { opacity: 0.7; }
+		.otherImages > img:active { 
+			-webkit-box-shadow: 10px 10px 39px 0px #fff;
+			-moz-box-shadow: 10px 10px 39px 0px #fff;
+			box-shadow: 10px 10px 39px 0px #fff;
+		}
+
+		p {color: gray; font-size: 2em;}
+
+		#left,#right { margin-top: 50%; font-size: 4em; cursor: pointer; height: 1px;}
+		#left:hover, #right:hover { opacity: 0.7;}
+		#left:active, #right:active { text-shadow: 2px 2px 6px #FFFFFF; }
+
+		@media only screen and (max-width: 665px) {
+			.otherImages > img {
+				max-width: 100px;
+				max-height: 100px;
+			}
+		}
+
+		.lightboxImage {
+			display: grid;
+			grid-template-columns: 1fr 1fr 1fr;
+			height: 100%;
+			line-height: 100%;
+		}
+		#left {
+			text-align: right;
+			margin-right: 2%;
+		}
+
+		#right {
+			text-align: left;
+			margin-left: 2%;
+		}
+
+	</style>
+</head>
+<body>
+	<div class="lightbox hidden">
+		<p id="closeTab">&times;</p>
+		<div class="lightboxImage">
+			<p id="left">&lt;</p>
+			<img id="boxImage" src="" alt="" />
+			<p id="right">&gt;</p>
+		</div>	
+
+		<div class="otherImages">
+			<img src="./lightbox_images/spring.jpg" alt="Spring" />
+			<img src="./lightbox_images/summer.png" alt="Summer" />	
+			<img src="./lightbox_images/autumn.jpg" alt="Autumn" />
+			<img src="./lightbox_images/winter.jpeg" alt="Winter" />
+		</div>
+
+		<p>Currently displaying: <span id="display"></span> (<span id="current"></span> / 4)</p>
+	</div>
+	<div class="imgs">
+		<img src="./lightbox_images/spring.jpg" alt="Spring" />
+		<img src="./lightbox_images/summer.png" alt="Summer" />	
+		<img src="./lightbox_images/autumn.jpg" alt="Autumn" />
+		<img src="./lightbox_images/winter.jpeg" alt="Winter" />
+	</div>
+
+	<script>
+		let el = document.querySelectorAll('.imgs > img'), img = 0, 
+		boxImage = document.querySelector('#boxImage'),
+		box = document.querySelector('div.lightbox'),
+		container = document.querySelector('.imgs'),
+		closeTab = document.querySelector('#closeTab'),
+		display = document.querySelector('#display'),
+		body = document.querySelector('body'), 
+		left = document.querySelector('#left'),
+		right = document.querySelector('#right');
+		switchTabs = document.querySelectorAll('.otherImages > img'),
+		current = document.querySelector('#current');
+		index = '';
+
+		function openTabs(num) {
+			el[num].addEventListener('click', function() {
+				index = num;
+				changeImage(this);
+				body.style.background = 'black';
+				box.style.display = 'block';
+				container.style.display = 'none';
+			});
+		}
+
+		function changeImage(image) { // PART OF OTHER FUNCTIONS
+			boxImage.src = image.src;
+			boxImage.alt = image.alt;
+			display.innerHTML = image.alt;
+			current.innerHTML = index + 1;
+		}
+
+		function changeTab(tab) {
+			switchTabs[tab].addEventListener('click', function() {
+				index = tab;
+				changeImage(this);
+			});
+		}
+		for (let img = 0; img < el.length; img++) {
+			openTabs(img);
+			changeTab(img);
+		}
+		closeTab.addEventListener('click', function() {
+			box.style.display = 'none';
+			container.style.display = 'flex';
+			body.style.background = 'white';
+		});
+		function changeImageThroughArrows(direction) {
+			if (direction === 'left') {
+				index--;
+				if (index < 0) { index = el.length - 1;}
+				changeImage(switchTabs[index]);
+			} else if (direction === 'right') {
+				index++;
+				if (index > el.length - 1) { index = 0; }
+				changeImage(switchTabs[index]);
+			}
+		}
+		
+		left.addEventListener('click', changeImageThroughArrows.bind(this, 'left'));
+		right.addEventListener('click', changeImageThroughArrows.bind(this, 'right'));
+	</script>
+</body>
+</html>
